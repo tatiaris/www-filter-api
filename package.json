@@ -1,0 +1,21 @@
+{
+  "name": "html2pdf",
+  "version": "1.0.0",
+  "description": "html to pdf api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Rishabh Tatia",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/cognitiveservices-computervision": "^7.1.0",
+    "async": "^3.2.0",
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "html-pdf-node": "^1.0.7"
+  }
+}
