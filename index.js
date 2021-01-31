@@ -8,6 +8,7 @@ const app = express()
 const cors = require('cors')
 const port = 8000
 const jsonParser = bodyParser.json()
+var fs = require("fs");
 
 const key1 = "fd1ef4a0860f4dd4b50974e3ce93c1c9"
 const key2 = "6c500212b73a4c8bbe5ad71d799484fd"
@@ -23,21 +24,32 @@ const computerVision = async (adultURLImage) => {
   return Promise.resolve(isInApp)
 }
 
-const getFilteredHtml = (pageHtml) => {
-  const $ = cheerio.load(pageHtml);
+const getFilteredHtml = async (pageHtml) => {
+  let $ = cheerio.load(pageHtml);
+  let imgFilter = new Promise((resolve, reject) => {
+    $('img').each(function(i, elm) {
+      let old_src = $(this).attr('src');
+      let new_src = old_src;
 
-  // loop through all img urls in the html code and check them for inapp content, change them accordingly
-  $('img').each(async (i, elm) => {
-    const imgSrc = $(this).attr('src')
-    await computerVision(imgSrc).then(isInapp => {
-      console.log(isInapp);
-      if (isInapp) {
-        imgElems[i].attribs['src'] = "https://tatiaris.com/img/www_filter/not_gore_example.jpeg"
-      }
+      computerVision(`https://tatiaris.com${old_src}`).then(isInapp => {
+        console.log(old_src, isInapp);
+        if (isInapp) {
+          new_src = "https://tatiaris.com/img/www_filter/not_gore_example.jpeg"
+        }
+      }).catch(err => console.log(err))
+      $(this).attr("src", new_src);
+      if (i === $('img').length -1) resolve();
     })
-  });
+  })
 
-  return Promise.resolve(cheerio.html($))
+  // filtering bad words
+  var badWords = fs.readFileSync("./naughty.txt", "utf-8").split("\n");
+  var regex = new RegExp( badWords.join( "|" ), "i");
+  while (cleanHtml.match(regex)) {
+      cleanHtml = cleanHtml.replace(regex, '*')
+  }
+
+  return Promise.resolve($.html())
 }
 
 app.use(cors());
@@ -52,7 +64,8 @@ app.post('/', jsonParser, async (req, res) => {
 
   await getFilteredHtml(pageHtml).then(filteredHtml => {
     cleanHtml = filteredHtml;
-  })
+    console.log(cleanHtml);
+  }).catch(err => console.log(err))
 
   const responseData = {
     sucess: true,
