@@ -10,9 +10,9 @@ const port = 8000
 const jsonParser = bodyParser.json()
 var fs = require("fs");
 
-const key1 = "fd1ef4a0860f4dd4b50974e3ce93c1c9"
-const key2 = "6c500212b73a4c8bbe5ad71d799484fd"
-const endpoint = "https://cv-www-filter.cognitiveservices.azure.com/"
+const key1 = "YOUR_KEY_HERE"
+const key2 = "YOUR_KEY_HERE"
+const endpoint = "YOUR_ENDPOINT_HERE"
 
 const computerVisionClient = new ComputerVisionClient(new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': key1 } }), endpoint);
 const computerVision = async (adultURLImage) => {
